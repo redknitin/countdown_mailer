@@ -14,21 +14,11 @@ import configparser
 cfg = configparser.ConfigParser()
 cfg.read('settings.ini')
 
-
-from countdown import num_days as no_days
-num_days = no_days()
-
-
-def get_content():
-    global num_days
-    evtname = cfg['Event']['EventName']
-    return str(cfg['Mail']['MessageTpl']) % {
-        'name': evtname,
-        'countdown': num_days
-    }
+import logging
+logging.basicConfig(level=10, filename='mailer.log')
 
 
-def send_email():
+def send_email(content):
     """
     Main method
     :return:
@@ -39,31 +29,20 @@ def send_email():
     from_pass = cfg['Mail']['FromPass']
     to_email = cfg['Mail']['ToEmail']
     subject = cfg['Mail']['Subject']
+    logging.debug('Email from %s to %s with subject %s' % (from_email, to_email, subject))
 
+    logging.debug('Connecting to SMTP server')
     srv = smtplib.SMTP('smtp.gmail.com', 587)
     srv.ehlo()
     srv.starttls()
     srv.ehlo()
     srv.login(from_email, from_pass)
 
-    msg = MIMEText(get_content())
+    msg = MIMEText(content)
     msg['Subject'] = subject
     srv.sendmail(from_email, to_email, msg.as_string())
+    logging.debug('Email sent')
 
     srv.quit()
     srv.close()
-
-
-def main():
-    global num_days
-
-    if num_days <= 0:
-        print('Event has lapsed')
-        return
-
-    send_email()
-    print('Done!')
-
-
-if __name__ == '__main__':
-    main()
+    logging.debug('Disconnecting from server')

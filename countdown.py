@@ -7,6 +7,10 @@ cfg.read('settings.ini')
 from datetime import datetime
 
 
+import logging
+logging.basicConfig(level=10, filename='mailer.log')
+
+
 def num_days():
     global cfg
     evtname = cfg['Event']['EventName']
