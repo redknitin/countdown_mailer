@@ -15,7 +15,7 @@ cfg.read('settings.ini')
 from mailer import send_email
 
 import logging
-logging.basicConfig(level=10, filename='mailer.log')
+logging.basicConfig(level=10, filename='mailer.log', format='%(asctime)s - %(levelname)s - %(message)s')
 
 from countdown import num_days as no_days
 try:
@@ -25,6 +25,10 @@ except Exception as xcpt:
 
 
 def get_content():
+    """
+    Builds the string using the message template defined in the configuration file
+    :return:
+    """
     global num_days
     evtname = cfg['Event']['EventName']
     return str(cfg['Mail']['MessageTpl']) % {
@@ -34,6 +38,10 @@ def get_content():
 
 
 def main():
+    """
+    Entry point for the application
+    :return:
+    """
     global num_days
     logging.debug('Mailer script invoked.')
 
